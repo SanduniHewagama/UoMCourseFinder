@@ -1,4 +1,4 @@
-// app/navigation/AppNavigator.js
+// app/navigation/AppNavigator.js - UPDATED VERSION
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -14,25 +14,9 @@ import { COLORS } from '../constants/colors';
 // Import screens
 import LoginScreen from '../screens/auth/LoginScreen';
 import RegisterScreen from '../screens/auth/RegisterScreen';
-
-// Placeholder screens (to be created)
-const HomeScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Feather name="home" size={50} color={COLORS.primary} />
-  </View>
-);
-
-const DetailsScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Feather name="info" size={50} color={COLORS.primary} />
-  </View>
-);
-
-const FavoritesScreen = () => (
-  <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-    <Feather name="heart" size={50} color={COLORS.primary} />
-  </View>
-);
+import HomeScreen from '../screens/home/HomeScreen';
+import DetailsScreen from '../screens/details/DetailsScreen';
+import FavoritesScreen from '../screens/favorites/FavoritesScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
