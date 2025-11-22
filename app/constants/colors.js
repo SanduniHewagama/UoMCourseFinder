@@ -1,9 +1,9 @@
 // app/constants/colors.js
 
 export const COLORS = {
-  primary: '#00A86B',      // Green
-  primaryDark: '#008556',  // Darker green
-  primaryLight: '#4CAF50', // Light green
+  primary: '#0052cc',      // 
+  primaryDark: '#003d99',  // Darker
+  primaryLight: '#66a3ff', // Light 
   white: '#FFFFFF',
   black: '#000000',
   gray: '#757575',

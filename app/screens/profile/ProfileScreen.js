@@ -313,7 +313,7 @@ const ProfileScreen = ({ navigation }) => {
           Version 1.0.0
         </Text>
         <Text style={[styles.footerText, darkMode && styles.darkFooterText]}>
-          Made with ❤️ for UoM
+          Made 224075K for UoM
         </Text>
       </View>
     </ScrollView>
@@ -335,7 +335,7 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.background || "#f5f5f5",
   },
   header: {
-    backgroundColor: COLORS.primary || "#4CAF50",
+    backgroundColor: COLORS.primary || "#13294aff",
     paddingTop: 40,
     paddingBottom: 30,
     paddingHorizontal: 20,
@@ -344,7 +344,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 30,
   },
   darkHeader: {
-    backgroundColor: "#2d5f3f",
+    backgroundColor: "#122f5cff",
   },
   avatarContainer: {
     position: "relative",
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   avatarText: {
     fontSize: 36,
     fontWeight: "bold",
-    color: COLORS.primary || "#4CAF50",
+    color: COLORS.primary || "#13294aff",
   },
   darkAvatarText: {
     color: COLORS.white,
@@ -478,14 +478,14 @@ const styles = StyleSheet.create({
   iconContainer: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: 30,
     backgroundColor: COLORS.lightPrimary || "#E8F5E9",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 15,
   },
   darkIconContainer: {
-    backgroundColor: "#3a5a4f",
+    backgroundColor: "#020a17ff",
   },
   menuItemText: {
     flex: 1,
