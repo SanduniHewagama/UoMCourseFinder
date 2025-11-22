@@ -1,4 +1,4 @@
-// app/navigation/AppNavigator.js - UPDATED VERSION
+// app/navigation/AppNavigator.js - UPDATED VERSION WITH PROFILE
 import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
@@ -17,6 +17,7 @@ import RegisterScreen from '../screens/auth/RegisterScreen';
 import HomeScreen from '../screens/home/HomeScreen';
 import DetailsScreen from '../screens/details/DetailsScreen';
 import FavoritesScreen from '../screens/favorites/FavoritesScreen';
+import ProfileScreen from '../screens/profile/ProfileScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -49,6 +50,8 @@ const MainTabs = () => {
             iconName = 'home';
           } else if (route.name === 'FavoritesTab') {
             iconName = 'heart';
+          } else if (route.name === 'ProfileTab') {
+            iconName = 'user';
           }
 
           return <Feather name={iconName} size={size} color={color} />;
@@ -70,11 +73,6 @@ const MainTabs = () => {
         headerTitleStyle: {
           fontWeight: 'bold',
         },
-        headerRight: () => (
-          <View style={{ marginRight: 15 }}>
-            <Feather name="user" size={24} color={COLORS.white} />
-          </View>
-        ),
       })}
     >
       <Tab.Screen
@@ -83,6 +81,11 @@ const MainTabs = () => {
         options={{
           tabBarLabel: 'Courses',
           headerTitle: `Welcome, ${user?.firstName || user?.username || 'User'}`,
+          headerRight: () => (
+            <View style={{ marginRight: 15 }}>
+              <Feather name="bell" size={24} color={COLORS.white} />
+            </View>
+          ),
         }}
       />
       <Tab.Screen
@@ -91,6 +94,24 @@ const MainTabs = () => {
         options={{
           tabBarLabel: 'Favorites',
           headerTitle: 'My Favorites',
+          headerRight: () => (
+            <View style={{ marginRight: 15 }}>
+              <Feather name="filter" size={24} color={COLORS.white} />
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="ProfileTab"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+          headerTitle: 'My Profile',
+          headerRight: () => (
+            <View style={{ marginRight: 15 }}>
+              <Feather name="settings" size={24} color={COLORS.white} />
+            </View>
+          ),
         }}
       />
     </Tab.Navigator>
@@ -115,7 +136,7 @@ const AppNavigator = () => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
         <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
