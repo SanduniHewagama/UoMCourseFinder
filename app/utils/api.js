@@ -1,10 +1,12 @@
-// app/utils/api.js
+// app/utils/api.js - FINAL FIXED VERSION
 
 const BASE_URL = 'https://dummyjson.com';
 
 // Authentication APIs
 export const loginUser = async (username, password) => {
   try {
+    console.log('Attempting login with:', username);
+    
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -17,20 +19,36 @@ export const loginUser = async (username, password) => {
       }),
     });
 
+    const data = await response.json();
+    console.log('Login response received');
+
     if (!response.ok) {
-      throw new Error('Invalid credentials');
+      throw new Error(data.message || 'Invalid credentials');
     }
 
-    const data = await response.json();
+    // DummyJSON returns "accessToken", not "token" - normalize it
+    if (data.accessToken) {
+      data.token = data.accessToken;
+    }
+
+    // Verify token exists
+    if (!data.token) {
+      throw new Error('No token received from server');
+    }
+
+    console.log('Login successful for user:', data.firstName);
     return data;
   } catch (error) {
-    throw error;
+    console.error('Login error:', error.message);
+    throw new Error(error.message || 'Network error. Please try again.');
   }
 };
 
 // Mock registration (DummyJSON doesn't have real registration)
 export const registerUser = async (userData) => {
   try {
+    console.log('Attempting registration:', userData.username);
+    
     const response = await fetch(`${BASE_URL}/users/add`, {
       method: 'POST',
       headers: {
@@ -39,14 +57,17 @@ export const registerUser = async (userData) => {
       body: JSON.stringify(userData),
     });
 
+    const data = await response.json();
+    console.log('Registration response received');
+
     if (!response.ok) {
-      throw new Error('Registration failed');
+      throw new Error(data.message || 'Registration failed');
     }
 
-    const data = await response.json();
     return data;
   } catch (error) {
-    throw error;
+    console.error('Registration error:', error.message);
+    throw new Error(error.message || 'Network error. Please try again.');
   }
 };
 
@@ -60,13 +81,15 @@ export const getCurrentUser = async (token) => {
       },
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
       throw new Error('Failed to fetch user data');
     }
 
-    const data = await response.json();
     return data;
   } catch (error) {
+    console.error('Get user error:', error.message);
     throw error;
   }
 };
@@ -92,8 +115,10 @@ export const fetchCourses = async () => {
       status: product.stock > 50 ? 'Active' : product.stock > 0 ? 'Limited' : 'Full',
     }));
     
+    console.log(`Fetched ${courses.length} courses`);
     return courses;
   } catch (error) {
+    console.error('Fetch courses error:', error.message);
     throw error;
   }
 };
@@ -122,6 +147,7 @@ export const fetchCourseDetails = async (id) => {
       status: data.stock > 50 ? 'Active' : data.stock > 0 ? 'Limited' : 'Full',
     };
   } catch (error) {
+    console.error('Fetch course details error:', error.message);
     throw error;
   }
 };

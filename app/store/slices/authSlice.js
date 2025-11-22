@@ -1,4 +1,4 @@
-// app/store/slices/authSlice.js
+// app/store/slices/authSlice.js - FIXED VERSION
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginUser, registerUser } from '../../utils/api';
@@ -9,11 +9,17 @@ export const login = createAsyncThunk(
   async ({ username, password }, { rejectWithValue }) => {
     try {
       const data = await loginUser(username, password);
-      await AsyncStorage.setItem('token', data.token);
-      await AsyncStorage.setItem('user', JSON.stringify(data));
-      return data;
+      
+      // Check if token exists before storing
+      if (data && data.token) {
+        await AsyncStorage.setItem('token', data.token);
+        await AsyncStorage.setItem('user', JSON.stringify(data));
+        return data;
+      } else {
+        throw new Error('No token received from server');
+      }
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Login failed');
     }
   }
 );
@@ -25,24 +31,33 @@ export const register = createAsyncThunk(
       const data = await registerUser(userData);
       return data;
     } catch (error) {
-      return rejectWithValue(error.message);
+      return rejectWithValue(error.message || 'Registration failed');
     }
   }
 );
 
 export const logout = createAsyncThunk('auth/logout', async () => {
-  await AsyncStorage.removeItem('token');
-  await AsyncStorage.removeItem('user');
+  try {
+    await AsyncStorage.removeItem('token');
+    await AsyncStorage.removeItem('user');
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
 });
 
 export const checkAuth = createAsyncThunk('auth/checkAuth', async () => {
-  const token = await AsyncStorage.getItem('token');
-  const user = await AsyncStorage.getItem('user');
-  
-  if (token && user) {
-    return JSON.parse(user);
+  try {
+    const token = await AsyncStorage.getItem('token');
+    const user = await AsyncStorage.getItem('user');
+    
+    if (token && user) {
+      return JSON.parse(user);
+    }
+    return null;
+  } catch (error) {
+    console.error('Check auth error:', error);
+    return null;
   }
-  return null;
 });
 
 const authSlice = createSlice({
@@ -61,6 +76,7 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // Login
       .addCase(login.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -74,8 +90,10 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.isAuthenticated = false;
+        state.error = action.payload || 'Login failed';
       })
+      // Register
       .addCase(register.pending, (state) => {
         state.isLoading = true;
         state.error = null;
@@ -86,14 +104,16 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
-        state.error = action.payload;
+        state.error = action.payload || 'Registration failed';
       })
+      // Logout
       .addCase(logout.fulfilled, (state) => {
         state.user = null;
         state.token = null;
         state.isAuthenticated = false;
         state.error = null;
       })
+      // Check Auth
       .addCase(checkAuth.fulfilled, (state, action) => {
         if (action.payload) {
           state.user = action.payload;
