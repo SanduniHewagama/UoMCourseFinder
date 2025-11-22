@@ -34,17 +34,21 @@ const ProfileScreen = ({ navigation }) => {
   const loadUserSettings = async () => {
     try {
       const savedSettings = await AsyncStorage.getItem("appSettings");
-      if (savedSettings) {
-        const settings = JSON.parse(savedSettings);
-        setDarkMode(settings.darkMode || false);
-      }
+
+      const settings = savedSettings
+        ? JSON.parse(savedSettings)
+        : {
+            darkMode: false,
+            pushNotifications: false,
+          };
+
+      setDarkMode(settings.darkMode);
       setLoading(false);
     } catch (error) {
       console.error("Error loading settings:", error);
       setLoading(false);
     }
   };
-
   // Get user initials for avatar
   const getInitials = (name) => {
     if (!name) return "U";

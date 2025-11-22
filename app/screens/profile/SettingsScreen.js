@@ -1,5 +1,5 @@
 // app/screens/profile/SettingsScreen.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,10 +9,10 @@ import {
   Switch,
   Alert,
   Platform,
-} from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { COLORS } from '../../constants/colors';
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { COLORS } from "../../constants/colors";
 
 const SettingsScreen = ({ navigation }) => {
   const [settings, setSettings] = useState({
@@ -33,14 +33,14 @@ const SettingsScreen = ({ navigation }) => {
     },
     preferences: {
       autoPlayVideos: false,
-      downloadQuality: 'high',
-      language: 'English',
-      fontSize: 'medium',
-      theme: 'light',
+      downloadQuality: "high",
+      language: "English",
+      fontSize: "medium",
+      theme: "light",
     },
     app: {
       cacheEnabled: true,
-      dataUsage: 'moderate',
+      dataUsage: "moderate",
       autoDownload: false,
       cellularData: true,
     },
@@ -54,24 +54,76 @@ const SettingsScreen = ({ navigation }) => {
 
   const loadSettings = async () => {
     try {
-      const savedSettings = await AsyncStorage.getItem('appSettings');
+      const savedSettings = await AsyncStorage.getItem("appSettings");
+      const defaultSettings = {
+        notifications: {
+          pushNotifications: true,
+          emailNotifications: true,
+          courseReminders: true,
+          achievementAlerts: true,
+          soundEnabled: true,
+          vibrationEnabled: true,
+        },
+        privacy: {
+          profileVisibility: true,
+          showActivity: true,
+          allowMessages: true,
+          showEmail: false,
+          showPhone: false,
+        },
+        preferences: {
+          autoPlayVideos: false,
+          downloadQuality: "high",
+          language: "English",
+          fontSize: "medium",
+          theme: "light",
+        },
+        app: {
+          cacheEnabled: true,
+          dataUsage: "moderate",
+          autoDownload: false,
+          cellularData: true,
+        },
+      };
+
       if (savedSettings) {
-        setSettings(JSON.parse(savedSettings));
+        const parsed = JSON.parse(savedSettings);
+
+        // MERGE saved settings with defaults
+        const mergedSettings = {
+          ...defaultSettings,
+          ...parsed,
+          notifications: {
+            ...defaultSettings.notifications,
+            ...parsed.notifications,
+          },
+          privacy: { ...defaultSettings.privacy, ...parsed.privacy },
+          preferences: {
+            ...defaultSettings.preferences,
+            ...parsed.preferences,
+          },
+          app: { ...defaultSettings.app, ...parsed.app },
+        };
+
+        setSettings(mergedSettings);
+      } else {
+        setSettings(defaultSettings);
       }
+
       setLoading(false);
     } catch (error) {
-      console.error('Error loading settings:', error);
+      console.error("Error loading settings:", error);
       setLoading(false);
     }
   };
 
   const saveSettings = async (newSettings) => {
     try {
-      await AsyncStorage.setItem('appSettings', JSON.stringify(newSettings));
+      await AsyncStorage.setItem("appSettings", JSON.stringify(newSettings));
       setSettings(newSettings);
     } catch (error) {
-      console.error('Error saving settings:', error);
-      Alert.alert('Error', 'Failed to save settings');
+      console.error("Error saving settings:", error);
+      Alert.alert("Error", "Failed to save settings");
     }
   };
 
@@ -88,17 +140,20 @@ const SettingsScreen = ({ navigation }) => {
 
   const handleClearCache = () => {
     Alert.alert(
-      'Clear Cache',
-      'This will free up space on your device. Continue?',
+      "Clear Cache",
+      "This will free up space on your device. Continue?",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Clear',
-          style: 'destructive',
+          text: "Clear",
+          style: "destructive",
           onPress: async () => {
             // Simulate cache clearing
             setTimeout(() => {
-              Alert.alert('Success', 'Cache cleared successfully! Freed up 45 MB.');
+              Alert.alert(
+                "Success",
+                "Cache cleared successfully! Freed up 45 MB."
+              );
             }, 1000);
           },
         },
@@ -108,16 +163,16 @@ const SettingsScreen = ({ navigation }) => {
 
   const handleResetSettings = () => {
     Alert.alert(
-      'Reset Settings',
-      'This will restore all settings to default. Continue?',
+      "Reset Settings",
+      "This will restore all settings to default. Continue?",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Reset',
-          style: 'destructive',
+          text: "Reset",
+          style: "destructive",
           onPress: async () => {
             try {
-              await AsyncStorage.removeItem('appSettings');
+              await AsyncStorage.removeItem("appSettings");
               const defaultSettings = {
                 notifications: {
                   pushNotifications: true,
@@ -136,22 +191,22 @@ const SettingsScreen = ({ navigation }) => {
                 },
                 preferences: {
                   autoPlayVideos: false,
-                  downloadQuality: 'high',
-                  language: 'English',
-                  fontSize: 'medium',
-                  theme: 'light',
+                  downloadQuality: "high",
+                  language: "English",
+                  fontSize: "medium",
+                  theme: "light",
                 },
                 app: {
                   cacheEnabled: true,
-                  dataUsage: 'moderate',
+                  dataUsage: "moderate",
                   autoDownload: false,
                   cellularData: true,
                 },
               };
               setSettings(defaultSettings);
-              Alert.alert('Success', 'Settings reset to default');
+              Alert.alert("Success", "Settings reset to default");
             } catch (error) {
-              Alert.alert('Error', 'Failed to reset settings');
+              Alert.alert("Error", "Failed to reset settings");
             }
           },
         },
@@ -160,195 +215,182 @@ const SettingsScreen = ({ navigation }) => {
   };
 
   const handleDownloadQuality = () => {
-    Alert.alert(
-      'Download Quality',
-      'Choose video download quality',
-      [
-        {
-          text: 'Low (360p)',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, downloadQuality: 'low' },
-            };
-            saveSettings(newSettings);
-          },
+    Alert.alert("Download Quality", "Choose video download quality", [
+      {
+        text: "Low (360p)",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, downloadQuality: "low" },
+          };
+          saveSettings(newSettings);
         },
-        {
-          text: 'Medium (720p)',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, downloadQuality: 'medium' },
-            };
-            saveSettings(newSettings);
-          },
+      },
+      {
+        text: "Medium (720p)",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, downloadQuality: "medium" },
+          };
+          saveSettings(newSettings);
         },
-        {
-          text: 'High (1080p)',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, downloadQuality: 'high' },
-            };
-            saveSettings(newSettings);
-          },
+      },
+      {
+        text: "High (1080p)",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, downloadQuality: "high" },
+          };
+          saveSettings(newSettings);
         },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
   };
 
   const handleLanguage = () => {
-    Alert.alert(
-      'Select Language',
-      'Choose your preferred language',
-      [
-        {
-          text: 'English',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, language: 'English' },
-            };
-            saveSettings(newSettings);
-          },
+    Alert.alert("Select Language", "Choose your preferred language", [
+      {
+        text: "English",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, language: "English" },
+          };
+          saveSettings(newSettings);
         },
-        {
-          text: 'Spanish',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, language: 'Spanish' },
-            };
-            saveSettings(newSettings);
-          },
+      },
+      {
+        text: "Spanish",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, language: "Spanish" },
+          };
+          saveSettings(newSettings);
         },
-        {
-          text: 'French',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, language: 'French' },
-            };
-            saveSettings(newSettings);
-          },
+      },
+      {
+        text: "French",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, language: "French" },
+          };
+          saveSettings(newSettings);
         },
-        {
-          text: 'German',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, language: 'German' },
-            };
-            saveSettings(newSettings);
-          },
+      },
+      {
+        text: "German",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, language: "German" },
+          };
+          saveSettings(newSettings);
         },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
   };
 
   const handleFontSize = () => {
-    Alert.alert(
-      'Font Size',
-      'Choose your preferred font size',
-      [
-        {
-          text: 'Small',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, fontSize: 'small' },
-            };
-            saveSettings(newSettings);
-          },
+    Alert.alert("Font Size", "Choose your preferred font size", [
+      {
+        text: "Small",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, fontSize: "small" },
+          };
+          saveSettings(newSettings);
         },
-        {
-          text: 'Medium',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, fontSize: 'medium' },
-            };
-            saveSettings(newSettings);
-          },
+      },
+      {
+        text: "Medium",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, fontSize: "medium" },
+          };
+          saveSettings(newSettings);
         },
-        {
-          text: 'Large',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              preferences: { ...settings.preferences, fontSize: 'large' },
-            };
-            saveSettings(newSettings);
-          },
+      },
+      {
+        text: "Large",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            preferences: { ...settings.preferences, fontSize: "large" },
+          };
+          saveSettings(newSettings);
         },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
   };
 
   const handleDataUsage = () => {
-    Alert.alert(
-      'Data Usage',
-      'Select data usage preference',
-      [
-        {
-          text: 'Low - Save Data',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              app: { ...settings.app, dataUsage: 'low' },
-            };
-            saveSettings(newSettings);
-          },
+    Alert.alert("Data Usage", "Select data usage preference", [
+      {
+        text: "Low - Save Data",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            app: { ...settings.app, dataUsage: "low" },
+          };
+          saveSettings(newSettings);
         },
-        {
-          text: 'Moderate - Balanced',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              app: { ...settings.app, dataUsage: 'moderate' },
-            };
-            saveSettings(newSettings);
-          },
+      },
+      {
+        text: "Moderate - Balanced",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            app: { ...settings.app, dataUsage: "moderate" },
+          };
+          saveSettings(newSettings);
         },
-        {
-          text: 'High - Best Quality',
-          onPress: () => {
-            const newSettings = {
-              ...settings,
-              app: { ...settings.app, dataUsage: 'high' },
-            };
-            saveSettings(newSettings);
-          },
+      },
+      {
+        text: "High - Best Quality",
+        onPress: () => {
+          const newSettings = {
+            ...settings,
+            app: { ...settings.app, dataUsage: "high" },
+          };
+          saveSettings(newSettings);
         },
-        { text: 'Cancel', style: 'cancel' },
-      ]
-    );
+      },
+      { text: "Cancel", style: "cancel" },
+    ]);
   };
 
   const handleDeleteAccount = () => {
     Alert.alert(
-      'Delete Account',
-      'This action cannot be undone. All your data will be permanently deleted.\n\nAre you absolutely sure?',
+      "Delete Account",
+      "This action cannot be undone. All your data will be permanently deleted.\n\nAre you absolutely sure?",
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: "Cancel", style: "cancel" },
         {
-          text: 'Delete',
-          style: 'destructive',
+          text: "Delete",
+          style: "destructive",
           onPress: () => {
             Alert.alert(
-              'Final Confirmation',
+              "Final Confirmation",
               'Type "DELETE" to confirm account deletion',
               [
-                { text: 'Cancel', style: 'cancel' },
+                { text: "Cancel", style: "cancel" },
                 {
-                  text: 'I Understand',
-                  style: 'destructive',
+                  text: "I Understand",
+                  style: "destructive",
                   onPress: () => {
-                    Alert.alert('Info', 'Account deletion feature will be available soon. Please contact support.');
+                    Alert.alert(
+                      "Info",
+                      "Account deletion feature will be available soon. Please contact support."
+                    );
                   },
                 },
               ]
@@ -381,7 +423,12 @@ const SettingsScreen = ({ navigation }) => {
 
   const SectionHeader = ({ title, icon }) => (
     <View style={styles.sectionHeader}>
-      <Feather name={icon} size={16} color={COLORS.gray} style={styles.sectionIcon} />
+      <Feather
+        name={icon}
+        size={16}
+        color={COLORS.gray}
+        style={styles.sectionIcon}
+      />
       <Text style={styles.sectionTitle}>{title}</Text>
     </View>
   );
@@ -406,8 +453,10 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.notifications.pushNotifications}
-              onValueChange={() => toggleSetting('notifications', 'pushNotifications')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() =>
+                toggleSetting("notifications", "pushNotifications")
+              }
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -419,8 +468,10 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.notifications.emailNotifications}
-              onValueChange={() => toggleSetting('notifications', 'emailNotifications')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() =>
+                toggleSetting("notifications", "emailNotifications")
+              }
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -432,8 +483,10 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.notifications.courseReminders}
-              onValueChange={() => toggleSetting('notifications', 'courseReminders')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() =>
+                toggleSetting("notifications", "courseReminders")
+              }
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -445,8 +498,10 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.notifications.achievementAlerts}
-              onValueChange={() => toggleSetting('notifications', 'achievementAlerts')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() =>
+                toggleSetting("notifications", "achievementAlerts")
+              }
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -458,8 +513,10 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.notifications.soundEnabled}
-              onValueChange={() => toggleSetting('notifications', 'soundEnabled')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() =>
+                toggleSetting("notifications", "soundEnabled")
+              }
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -471,8 +528,10 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.notifications.vibrationEnabled}
-              onValueChange={() => toggleSetting('notifications', 'vibrationEnabled')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() =>
+                toggleSetting("notifications", "vibrationEnabled")
+              }
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -489,8 +548,10 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.privacy.profileVisibility}
-              onValueChange={() => toggleSetting('privacy', 'profileVisibility')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() =>
+                toggleSetting("privacy", "profileVisibility")
+              }
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -502,8 +563,8 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.privacy.showActivity}
-              onValueChange={() => toggleSetting('privacy', 'showActivity')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() => toggleSetting("privacy", "showActivity")}
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -515,8 +576,8 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.privacy.allowMessages}
-              onValueChange={() => toggleSetting('privacy', 'allowMessages')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() => toggleSetting("privacy", "allowMessages")}
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -528,8 +589,8 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.privacy.showEmail}
-              onValueChange={() => toggleSetting('privacy', 'showEmail')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() => toggleSetting("privacy", "showEmail")}
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -541,8 +602,8 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.privacy.showPhone}
-              onValueChange={() => toggleSetting('privacy', 'showPhone')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() => toggleSetting("privacy", "showPhone")}
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -559,8 +620,10 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.preferences.autoPlayVideos}
-              onValueChange={() => toggleSetting('preferences', 'autoPlayVideos')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() =>
+                toggleSetting("preferences", "autoPlayVideos")
+              }
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -604,8 +667,8 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.app.cacheEnabled}
-              onValueChange={() => toggleSetting('app', 'cacheEnabled')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() => toggleSetting("app", "cacheEnabled")}
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -635,8 +698,8 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.app.autoDownload}
-              onValueChange={() => toggleSetting('app', 'autoDownload')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() => toggleSetting("app", "autoDownload")}
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -648,8 +711,8 @@ const SettingsScreen = ({ navigation }) => {
           rightComponent={
             <Switch
               value={settings.app.cellularData}
-              onValueChange={() => toggleSetting('app', 'cellularData')}
-              trackColor={{ false: '#e0e0e0', true: COLORS.primary }}
+              onValueChange={() => toggleSetting("app", "cellularData")}
+              trackColor={{ false: "#e0e0e0", true: COLORS.primary }}
               thumbColor={COLORS.white}
             />
           }
@@ -663,7 +726,12 @@ const SettingsScreen = ({ navigation }) => {
           icon="file-text"
           title="Terms of Service"
           subtitle="Read our terms and conditions"
-          onPress={() => Alert.alert('Terms of Service', 'Terms of Service will be available soon!')}
+          onPress={() =>
+            Alert.alert(
+              "Terms of Service",
+              "Terms of Service will be available soon!"
+            )
+          }
           rightComponent={
             <Feather name="chevron-right" size={20} color={COLORS.gray} />
           }
@@ -672,7 +740,12 @@ const SettingsScreen = ({ navigation }) => {
           icon="shield"
           title="Privacy Policy"
           subtitle="How we handle your data"
-          onPress={() => Alert.alert('Privacy Policy', 'Privacy Policy will be available soon!')}
+          onPress={() =>
+            Alert.alert(
+              "Privacy Policy",
+              "Privacy Policy will be available soon!"
+            )
+          }
           rightComponent={
             <Feather name="chevron-right" size={20} color={COLORS.gray} />
           }
@@ -681,7 +754,12 @@ const SettingsScreen = ({ navigation }) => {
           icon="info"
           title="Open Source Licenses"
           subtitle="Third-party software licenses"
-          onPress={() => Alert.alert('Licenses', 'Open source licenses will be available soon!')}
+          onPress={() =>
+            Alert.alert(
+              "Licenses",
+              "Open source licenses will be available soon!"
+            )
+          }
           rightComponent={
             <Feather name="chevron-right" size={20} color={COLORS.gray} />
           }
@@ -716,7 +794,9 @@ const SettingsScreen = ({ navigation }) => {
         <Feather name="package" size={48} color={COLORS.gray} />
         <Text style={styles.appName}>SkillUp</Text>
         <Text style={styles.appVersion}>Version 1.0.0</Text>
-        <Text style={styles.appCopyright}>© 2024 SkillUp. All rights reserved.</Text>
+        <Text style={styles.appCopyright}>
+          © 2024 SkillUp. All rights reserved.
+        </Text>
         <Text style={styles.appMade}>Made with ❤️ for UoM</Text>
       </View>
 
@@ -728,21 +808,21 @@ const SettingsScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#f5f5f5',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#f5f5f5",
   },
   loadingText: {
     fontSize: 16,
     color: COLORS.gray,
   },
   sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 10,
@@ -752,9 +832,9 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
     color: COLORS.gray,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   section: {
@@ -762,32 +842,32 @@ const styles = StyleSheet.create({
     marginHorizontal: 15,
     borderRadius: 12,
     marginBottom: 10,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
   },
   settingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 15,
     borderBottomWidth: 1,
-    borderBottomColor: '#f0f0f0',
+    borderBottomColor: "#f0f0f0",
   },
   settingLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   settingIcon: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: '#E8F5E9',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#E8F5E9",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   settingText: {
@@ -795,8 +875,8 @@ const styles = StyleSheet.create({
   },
   settingTitle: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#333',
+    fontWeight: "600",
+    color: "#333",
     marginBottom: 2,
   },
   settingSubtitle: {
@@ -804,14 +884,14 @@ const styles = StyleSheet.create({
     color: COLORS.gray,
   },
   appInfo: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 30,
     paddingHorizontal: 20,
   },
   appName: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#333',
+    fontWeight: "bold",
+    color: "#333",
     marginTop: 10,
   },
   appVersion: {

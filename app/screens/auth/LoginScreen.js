@@ -143,11 +143,11 @@ const LoginScreen = ({ navigation }) => {
             )}
           </TouchableOpacity>
 
-          <View style={styles.testCredentials}>
+          {/* <View style={styles.testCredentials}>
             <Text style={styles.testCredentialsTitle}>Test Credentials:</Text>
             <Text style={styles.testCredentialsText}>Username: emilys</Text>
             <Text style={styles.testCredentialsText}>Password: emilyspass</Text>
-          </View>
+          </View> */}
 
           <View style={styles.registerContainer}>
             <Text style={styles.registerText}>Don't have an account? </Text>
