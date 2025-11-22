@@ -20,6 +20,11 @@ import FavoritesScreen from "../screens/favorites/FavoritesScreen";
 import ProfileScreen from "../screens/profile/ProfileScreen";
 import EditProfileScreen from "../screens/profile/EditProfileScreen";
 import AchievementsScreen from "../screens/profile/AchievementsScreen";
+import SettingsScreen from "../screens/profile/SettingsScreen";
+import HelpAndSupportScreen from "../screens/profile/HelpAndSupportScreen";
+import { TouchableOpacity, Text } from "react-native";
+import { logout } from "../store/slices/authSlice";
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -40,7 +45,12 @@ const AuthStack = () => {
 
 // Main Tab Navigator
 const MainTabs = () => {
+  const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+   dispatch(logout());
+  };
 
   return (
     <Tab.Navigator
@@ -60,21 +70,9 @@ const MainTabs = () => {
         },
         tabBarActiveTintColor: COLORS.primary,
         tabBarInactiveTintColor: COLORS.gray,
-        tabBarStyle: {
-          backgroundColor: COLORS.white,
-          borderTopWidth: 1,
-          borderTopColor: COLORS.border,
-          height: 60,
-          paddingBottom: 8,
-          paddingTop: 8,
-        },
-        headerStyle: {
-          backgroundColor: COLORS.primary,
-        },
+        headerStyle: { backgroundColor: COLORS.primary },
         headerTintColor: COLORS.white,
-        headerTitleStyle: {
-          fontWeight: "bold",
-        },
+        headerTitleStyle: { fontWeight: "bold" },
       })}
     >
       <Tab.Screen
@@ -86,8 +84,28 @@ const MainTabs = () => {
             user?.firstName || user?.username || "User"
           }`,
           headerRight: () => (
-            <View style={{ marginRight: 15 }}>
+            <View
+              style={{
+                flexDirection: "row",
+                marginRight: 15,
+                alignItems: "center",
+              }}
+            >
               <Feather name="bell" size={24} color={COLORS.white} />
+
+              <TouchableOpacity
+                onPress={handleLogout}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginLeft: 20,
+                }}
+              >
+                <Feather name="log-out" size={20} color={COLORS.white} />
+                <Text style={{ color: COLORS.white, marginLeft: 5 }}>
+                  Logout
+                </Text>
+              </TouchableOpacity>
             </View>
           ),
         }}
@@ -204,6 +222,36 @@ const AppNavigator = () => {
                   fontWeight: "bold",
                 },
                 title: "Achievements",
+              }}
+            />
+            <Stack.Screen
+              name="Settings"
+              component={SettingsScreen}
+              options={{
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: COLORS.primary,
+                },
+                headerTintColor: COLORS.white,
+                headerTitleStyle: {
+                  fontWeight: "bold",
+                },
+                title: "Settings",
+              }}
+            />
+            <Stack.Screen
+              name="HelpAndSupport"
+              component={HelpAndSupportScreen}
+              options={{
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: COLORS.primary,
+                },
+                headerTintColor: COLORS.white,
+                headerTitleStyle: {
+                  fontWeight: "bold",
+                },
+                title: "Help & Support",
               }}
             />
           </>

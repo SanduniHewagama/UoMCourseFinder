@@ -3,6 +3,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginUser, registerUser } from '../../utils/api';
 
+
 // Async thunks
 export const login = createAsyncThunk(
   'auth/login',

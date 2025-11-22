@@ -75,6 +75,7 @@ const HomeScreen = ({ navigation }) => {
           </TouchableOpacity>
         )}
       </View>
+      
 
       {/* Categories */}
       <View style={styles.categoriesContainer}>
@@ -109,10 +110,6 @@ const HomeScreen = ({ navigation }) => {
         <Text style={styles.resultsText}>
           {filteredCourses.length} courses found
         </Text>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Feather name="log-out" size={20} color={COLORS.error} />
-          <Text style={styles.logoutText}>Logout</Text>
-        </TouchableOpacity>
       </View>
     </View>
   );
@@ -289,11 +286,11 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: COLORS.border,
+    borderColor: COLORS.white,
   },
   logoutText: {
     fontSize: 14,
-    color: COLORS.error,
+    color: COLORS.white,
     fontWeight: '600',
     marginLeft: 6,
   },

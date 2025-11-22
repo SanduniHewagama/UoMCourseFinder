@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,12 +9,12 @@ import {
   Alert,
   Switch,
   ActivityIndicator,
-} from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { useSelector, useDispatch } from 'react-redux';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { COLORS } from '../../constants/colors';
-
+} from "react-native";
+import { Feather } from "@expo/vector-icons";
+import { useSelector, useDispatch } from "react-redux";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { COLORS } from "../../constants/colors";
+import { logout } from "../../store/slices/authSlice";
 
 const ProfileScreen = ({ navigation }) => {
   const dispatch = useDispatch();
@@ -33,153 +33,114 @@ const ProfileScreen = ({ navigation }) => {
 
   const loadUserSettings = async () => {
     try {
-      const savedSettings = await AsyncStorage.getItem('appSettings');
+      const savedSettings = await AsyncStorage.getItem("appSettings");
       if (savedSettings) {
         const settings = JSON.parse(savedSettings);
         setDarkMode(settings.darkMode || false);
       }
       setLoading(false);
     } catch (error) {
-      console.error('Error loading settings:', error);
+      console.error("Error loading settings:", error);
       setLoading(false);
     }
   };
 
   // Get user initials for avatar
   const getInitials = (name) => {
-    if (!name) return 'U';
-    const names = name.split(' ');
+    if (!name) return "U";
+    const names = name.split(" ");
     if (names.length >= 2) {
       return names[0][0] + names[1][0];
     }
     return names[0][0];
   };
 
-  // Handle logout
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-        {
-          text: 'Logout',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await AsyncStorage.removeItem('authToken');
-              await AsyncStorage.removeItem('userData');
-              await AsyncStorage.removeItem('appSettings');
-              // Dispatch logout action (adjust according to your auth slice)
-              // dispatch(logout());
-              navigation.replace('Auth');
-            } catch (error) {
-              console.error('Logout error:', error);
-              Alert.alert('Error', 'Failed to logout. Please try again.');
-            }
-          },
-        },
-      ],
-      { cancelable: true }
-    );
+    dispatch(logout());
   };
 
   // Toggle dark mode
   const toggleDarkMode = async () => {
     const newDarkMode = !darkMode;
     setDarkMode(newDarkMode);
-    
+
     try {
-      const settings = await AsyncStorage.getItem('appSettings');
+      const settings = await AsyncStorage.getItem("appSettings");
       const currentSettings = settings ? JSON.parse(settings) : {};
       await AsyncStorage.setItem(
-        'appSettings',
+        "appSettings",
         JSON.stringify({ ...currentSettings, darkMode: newDarkMode })
       );
       // Implement dark mode logic here
       // You can dispatch an action to Redux to apply theme globally
     } catch (error) {
-      console.error('Error saving dark mode preference:', error);
+      console.error("Error saving dark mode preference:", error);
     }
   };
 
   // Handle edit avatar
   const handleEditAvatar = () => {
-    Alert.alert(
-      'Change Avatar',
-      'Choose an option',
-      [
-        {
-          text: 'Take Photo',
-          onPress: () => Alert.alert('Info', 'Camera feature coming soon'),
-        },
-        {
-          text: 'Choose from Gallery',
-          onPress: () => Alert.alert('Info', 'Gallery feature coming soon'),
-        },
-        {
-          text: 'Cancel',
-          style: 'cancel',
-        },
-      ]
-    );
+    Alert.alert("Change Avatar", "Choose an option", [
+      {
+        text: "Take Photo",
+        onPress: () => Alert.alert("Info", "Camera feature coming soon"),
+      },
+      {
+        text: "Choose from Gallery",
+        onPress: () => Alert.alert("Info", "Gallery feature coming soon"),
+      },
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+    ]);
   };
 
   const menuItems = [
     {
       id: 1,
-      icon: 'user',
-      title: 'Edit Profile',
-      subtitle: 'Update your personal information',
-      onPress: () => navigation.navigate('EditProfile'),
+      icon: "user",
+      title: "Edit Profile",
+      subtitle: "Update your personal information",
+      onPress: () => navigation.navigate("EditProfile"),
     },
     {
       id: 2,
-      icon: 'heart',
-      title: 'My Favourites',
-      subtitle: 'View your saved courses',
-      onPress: () => navigation.navigate('HomeTab'),
+      icon: "heart",
+      title: "My Favourites",
+      subtitle: "View your saved courses",
+      onPress: () => navigation.navigate("HomeTab"),
     },
     {
       id: 3,
-      icon: 'award',
-      title: 'Achievements',
-      subtitle: 'View your badges and progress',
-      onPress: () => navigation.navigate('Achievements'),
-    },
-    {
-      id: 4,
-      icon: 'bell',
-      title: 'Notifications',
-      subtitle: 'View all notifications',
-      onPress: () => navigation.navigate('Notifications'),
+      icon: "award",
+      title: "Achievements",
+      subtitle: "View your badges and progress",
+      onPress: () => navigation.navigate("Achievements"),
     },
     {
       id: 5,
-      icon: 'settings',
-      title: 'Settings',
-      subtitle: 'App preferences and settings',
-      onPress: () => navigation.navigate('Settings'),
+      icon: "settings",
+      title: "Settings",
+      subtitle: "App preferences and settings",
+      onPress: () => navigation.navigate("Settings"),
     },
     {
       id: 6,
-      icon: 'help-circle',
-      title: 'Help & Support',
-      subtitle: 'Get help and contact support',
-      onPress: () => Alert.alert('Help & Support', 'Help & Support feature coming soon!'),
+      icon: "help-circle",
+      title: "Help & Support",
+      subtitle: "Get help and contact support",
+      onPress: () => navigation.navigate("HelpAndSupport"),
     },
     {
       id: 7,
-      icon: 'info',
-      title: 'About',
-      subtitle: 'App version and information',
-      onPress: () => 
+      icon: "info",
+      title: "About",
+      subtitle: "App version and information",
+      onPress: () =>
         Alert.alert(
-          'About SkillUp',
-          'SkillUp v1.0.0\nEducation App by UoM Student\n\nLearn skills, earn badges, and join our community!'
+          "About SkillUp",
+          "SkillUp v1.0.0\nEducation App by UoM Student\n\nLearn skills, earn badges, and join our community!"
         ),
     },
   ];
@@ -193,19 +154,21 @@ const ProfileScreen = ({ navigation }) => {
   }
 
   return (
-    <ScrollView 
-      style={[styles.container, darkMode && styles.darkContainer]} 
+    <ScrollView
+      style={[styles.container, darkMode && styles.darkContainer]}
       showsVerticalScrollIndicator={false}
     >
       {/* Header Section */}
       <View style={[styles.header, darkMode && styles.darkHeader]}>
         <View style={styles.avatarContainer}>
           <View style={[styles.avatar, darkMode && styles.darkAvatar]}>
-            <Text style={[styles.avatarText, darkMode && styles.darkAvatarText]}>
-              {getInitials(user?.name || user?.username || 'User')}
+            <Text
+              style={[styles.avatarText, darkMode && styles.darkAvatarText]}
+            >
+              {getInitials(user?.name || user?.username || "User")}
             </Text>
           </View>
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.editAvatarButton}
             onPress={handleEditAvatar}
           >
@@ -214,14 +177,16 @@ const ProfileScreen = ({ navigation }) => {
         </View>
 
         <Text style={[styles.userName, darkMode && styles.darkText]}>
-          {user?.name || user?.username || 'Guest User'}
+          {user?.name || user?.username || "Guest User"}
         </Text>
         <Text style={[styles.userEmail, darkMode && styles.darkSubtext]}>
-          {user?.email || 'user@example.com'}
+          {user?.email || "user@example.com"}
         </Text>
 
         {/* Stats Row */}
-        <View style={[styles.statsContainer, darkMode && styles.darkStatsContainer]}>
+        <View
+          style={[styles.statsContainer, darkMode && styles.darkStatsContainer]}
+        >
           <View style={styles.statItem}>
             <Text style={[styles.statNumber, darkMode && styles.darkText]}>
               {stats.courses}
@@ -230,7 +195,9 @@ const ProfileScreen = ({ navigation }) => {
               Courses
             </Text>
           </View>
-          <View style={[styles.statDivider, darkMode && styles.darkStatDivider]} />
+          <View
+            style={[styles.statDivider, darkMode && styles.darkStatDivider]}
+          />
           <View style={styles.statItem}>
             <Text style={[styles.statNumber, darkMode && styles.darkText]}>
               {stats.favorites}
@@ -239,7 +206,9 @@ const ProfileScreen = ({ navigation }) => {
               Favourites
             </Text>
           </View>
-          <View style={[styles.statDivider, darkMode && styles.darkStatDivider]} />
+          <View
+            style={[styles.statDivider, darkMode && styles.darkStatDivider]}
+          />
           <View style={styles.statItem}>
             <Text style={[styles.statNumber, darkMode && styles.darkText]}>
               {stats.hours}
@@ -255,14 +224,21 @@ const ProfileScreen = ({ navigation }) => {
       <View style={[styles.section, darkMode && styles.darkSection]}>
         <View style={styles.darkModeContainer}>
           <View style={styles.menuItemLeft}>
-            <View style={[styles.iconContainer, darkMode && styles.darkIconContainer]}>
+            <View
+              style={[
+                styles.iconContainer,
+                darkMode && styles.darkIconContainer,
+              ]}
+            >
               <Feather name="moon" size={20} color={COLORS.primary} />
             </View>
             <View style={styles.menuItemText}>
               <Text style={[styles.menuTitle, darkMode && styles.darkText]}>
                 Dark Mode
               </Text>
-              <Text style={[styles.menuSubtitle, darkMode && styles.darkSubtext]}>
+              <Text
+                style={[styles.menuSubtitle, darkMode && styles.darkSubtext]}
+              >
                 Toggle dark theme
               </Text>
             </View>
@@ -293,22 +269,29 @@ const ProfileScreen = ({ navigation }) => {
             activeOpacity={0.7}
           >
             <View style={styles.menuItemLeft}>
-              <View style={[styles.iconContainer, darkMode && styles.darkIconContainer]}>
+              <View
+                style={[
+                  styles.iconContainer,
+                  darkMode && styles.darkIconContainer,
+                ]}
+              >
                 <Feather name={item.icon} size={20} color={COLORS.primary} />
               </View>
               <View style={styles.menuItemText}>
                 <Text style={[styles.menuTitle, darkMode && styles.darkText]}>
                   {item.title}
                 </Text>
-                <Text style={[styles.menuSubtitle, darkMode && styles.darkSubtext]}>
+                <Text
+                  style={[styles.menuSubtitle, darkMode && styles.darkSubtext]}
+                >
                   {item.subtitle}
                 </Text>
               </View>
             </View>
-            <Feather 
-              name="chevron-right" 
-              size={20} 
-              color={darkMode ? COLORS.lightGray : COLORS.gray} 
+            <Feather
+              name="chevron-right"
+              size={20}
+              color={darkMode ? COLORS.lightGray : COLORS.gray}
             />
           </TouchableOpacity>
         ))}
@@ -316,10 +299,7 @@ const ProfileScreen = ({ navigation }) => {
 
       {/* Logout Button */}
       <TouchableOpacity
-        style={[
-          styles.logoutButton,
-          darkMode && styles.darkLogoutButton,
-        ]}
+        style={[styles.logoutButton, darkMode && styles.darkLogoutButton]}
         onPress={handleLogout}
         activeOpacity={0.7}
       >
@@ -343,109 +323,109 @@ const ProfileScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background || '#f5f5f5',
+    backgroundColor: COLORS.background || "#f5f5f5",
   },
   darkContainer: {
-    backgroundColor: '#1a1a1a',
+    backgroundColor: "#1a1a1a",
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: COLORS.background || '#f5f5f5',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: COLORS.background || "#f5f5f5",
   },
   header: {
-    backgroundColor: COLORS.primary || '#4CAF50',
+    backgroundColor: COLORS.primary || "#4CAF50",
     paddingTop: 40,
     paddingBottom: 30,
     paddingHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
     borderBottomLeftRadius: 30,
     borderBottomRightRadius: 30,
   },
   darkHeader: {
-    backgroundColor: '#2d5f3f',
+    backgroundColor: "#2d5f3f",
   },
   avatarContainer: {
-    position: 'relative',
+    position: "relative",
     marginBottom: 15,
   },
   avatar: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: COLORS.white || '#fff',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: COLORS.white || "#fff",
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 3,
-    borderColor: COLORS.white || '#fff',
+    borderColor: COLORS.white || "#fff",
   },
   darkAvatar: {
-    backgroundColor: '#333',
-    borderColor: '#444',
+    backgroundColor: "#333",
+    borderColor: "#444",
   },
   avatarText: {
     fontSize: 36,
-    fontWeight: 'bold',
-    color: COLORS.primary || '#4CAF50',
+    fontWeight: "bold",
+    color: COLORS.primary || "#4CAF50",
   },
   darkAvatarText: {
     color: COLORS.white,
   },
   editAvatarButton: {
-    position: 'absolute',
+    position: "absolute",
     bottom: 0,
     right: 0,
-    backgroundColor: COLORS.secondary || '#2196F3',
+    backgroundColor: COLORS.secondary || "#2196F3",
     width: 32,
     height: 32,
     borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     borderWidth: 2,
-    borderColor: COLORS.white || '#fff',
+    borderColor: COLORS.white || "#fff",
   },
   userName: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: COLORS.white || '#fff',
+    fontWeight: "bold",
+    color: COLORS.white || "#fff",
     marginBottom: 5,
   },
   userEmail: {
     fontSize: 14,
-    color: COLORS.white || '#fff',
+    color: COLORS.white || "#fff",
     opacity: 0.9,
     marginBottom: 20,
   },
   statsContainer: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    flexDirection: "row",
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
     borderRadius: 15,
     paddingVertical: 15,
     paddingHorizontal: 20,
     marginTop: 10,
   },
   darkStatsContainer: {
-    backgroundColor: 'rgba(0, 0, 0, 0.2)',
+    backgroundColor: "rgba(0, 0, 0, 0.2)",
   },
   statItem: {
     flex: 1,
-    alignItems: 'center',
+    alignItems: "center",
   },
   statNumber: {
     fontSize: 20,
-    fontWeight: 'bold',
-    color: COLORS.white || '#fff',
+    fontWeight: "bold",
+    color: COLORS.white || "#fff",
     marginBottom: 3,
   },
   statLabel: {
     fontSize: 12,
-    color: COLORS.white || '#fff',
+    color: COLORS.white || "#fff",
     opacity: 0.9,
   },
   statDivider: {
     width: 1,
-    backgroundColor: COLORS.white || '#fff',
+    backgroundColor: COLORS.white || "#fff",
     opacity: 0.3,
     marginHorizontal: 10,
   },
@@ -453,118 +433,118 @@ const styles = StyleSheet.create({
     opacity: 0.2,
   },
   section: {
-    backgroundColor: COLORS.white || '#fff',
+    backgroundColor: COLORS.white || "#fff",
     marginTop: 15,
     marginHorizontal: 15,
     borderRadius: 15,
     padding: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   darkSection: {
-    backgroundColor: '#2a2a2a',
+    backgroundColor: "#2a2a2a",
     shadowOpacity: 0.3,
   },
   darkModeContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 15,
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     padding: 15,
   },
   menuItemBorder: {
     borderBottomWidth: 1,
-    borderBottomColor: COLORS.lightGray || '#e0e0e0',
+    borderBottomColor: COLORS.lightGray || "#e0e0e0",
   },
   darkMenuItem: {
-    borderBottomColor: '#444',
+    borderBottomColor: "#444",
   },
   darkMenuItemBorder: {
-    borderBottomColor: '#444',
+    borderBottomColor: "#444",
   },
   menuItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     flex: 1,
   },
   iconContainer: {
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: COLORS.lightPrimary || '#E8F5E9',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: COLORS.lightPrimary || "#E8F5E9",
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 15,
   },
   darkIconContainer: {
-    backgroundColor: '#3a5a4f',
+    backgroundColor: "#3a5a4f",
   },
   menuItemText: {
     flex: 1,
   },
   menuTitle: {
     fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.text || '#333',
+    fontWeight: "600",
+    color: COLORS.text || "#333",
     marginBottom: 3,
   },
   darkText: {
-    color: '#fff',
+    color: "#fff",
   },
   menuSubtitle: {
     fontSize: 12,
-    color: COLORS.gray || '#666',
+    color: COLORS.gray || "#666",
   },
   darkSubtext: {
-    color: '#aaa',
+    color: "#aaa",
   },
   logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: COLORS.white || '#fff',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: COLORS.white || "#fff",
     marginHorizontal: 15,
     marginTop: 15,
     padding: 16,
     borderRadius: 15,
     borderWidth: 1,
-    borderColor: COLORS.error || '#f44336',
-    shadowColor: '#000',
+    borderColor: COLORS.error || "#f44336",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
   darkLogoutButton: {
-    backgroundColor: '#2a2a2a',
-    borderColor: '#f44336',
+    backgroundColor: "#2a2a2a",
+    borderColor: "#f44336",
   },
   logoutText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: COLORS.error || '#f44336',
+    fontWeight: "600",
+    color: COLORS.error || "#f44336",
     marginLeft: 10,
   },
   footer: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingVertical: 30,
     paddingBottom: 40,
   },
   footerText: {
     fontSize: 12,
-    color: COLORS.gray || '#666',
+    color: COLORS.gray || "#666",
     marginVertical: 2,
   },
   darkFooterText: {
-    color: '#999',
+    color: "#999",
   },
 });
 
