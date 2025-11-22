@@ -1,23 +1,25 @@
 // app/navigation/AppNavigator.js - UPDATED VERSION WITH PROFILE
-import React, { useEffect } from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createStackNavigator } from '@react-navigation/stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useDispatch, useSelector } from 'react-redux';
-import { Feather } from '@expo/vector-icons';
-import { ActivityIndicator, View } from 'react-native';
+import React, { useEffect } from "react";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { useDispatch, useSelector } from "react-redux";
+import { Feather } from "@expo/vector-icons";
+import { ActivityIndicator, View } from "react-native";
 
-import { checkAuth } from '../store/slices/authSlice';
-import { loadFavorites } from '../store/slices/coursesSlice';
-import { COLORS } from '../constants/colors';
+import { checkAuth } from "../store/slices/authSlice";
+import { loadFavorites } from "../store/slices/coursesSlice";
+import { COLORS } from "../constants/colors";
 
 // Import screens
-import LoginScreen from '../screens/auth/LoginScreen';
-import RegisterScreen from '../screens/auth/RegisterScreen';
-import HomeScreen from '../screens/home/HomeScreen';
-import DetailsScreen from '../screens/details/DetailsScreen';
-import FavoritesScreen from '../screens/favorites/FavoritesScreen';
-import ProfileScreen from '../screens/profile/ProfileScreen';
+import LoginScreen from "../screens/auth/LoginScreen";
+import RegisterScreen from "../screens/auth/RegisterScreen";
+import HomeScreen from "../screens/home/HomeScreen";
+import DetailsScreen from "../screens/details/DetailsScreen";
+import FavoritesScreen from "../screens/favorites/FavoritesScreen";
+import ProfileScreen from "../screens/profile/ProfileScreen";
+import EditProfileScreen from "../screens/profile/EditProfileScreen";
+import AchievementsScreen from "../screens/profile/AchievementsScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -46,12 +48,12 @@ const MainTabs = () => {
         tabBarIcon: ({ focused, color, size }) => {
           let iconName;
 
-          if (route.name === 'HomeTab') {
-            iconName = 'home';
-          } else if (route.name === 'FavoritesTab') {
-            iconName = 'heart';
-          } else if (route.name === 'ProfileTab') {
-            iconName = 'user';
+          if (route.name === "HomeTab") {
+            iconName = "home";
+          } else if (route.name === "FavoritesTab") {
+            iconName = "heart";
+          } else if (route.name === "ProfileTab") {
+            iconName = "user";
           }
 
           return <Feather name={iconName} size={size} color={color} />;
@@ -71,7 +73,7 @@ const MainTabs = () => {
         },
         headerTintColor: COLORS.white,
         headerTitleStyle: {
-          fontWeight: 'bold',
+          fontWeight: "bold",
         },
       })}
     >
@@ -79,8 +81,10 @@ const MainTabs = () => {
         name="HomeTab"
         component={HomeScreen}
         options={{
-          tabBarLabel: 'Courses',
-          headerTitle: `Welcome, ${user?.firstName || user?.username || 'User'}`,
+          tabBarLabel: "Courses",
+          headerTitle: `Welcome, ${
+            user?.firstName || user?.username || "User"
+          }`,
           headerRight: () => (
             <View style={{ marginRight: 15 }}>
               <Feather name="bell" size={24} color={COLORS.white} />
@@ -92,8 +96,8 @@ const MainTabs = () => {
         name="FavoritesTab"
         component={FavoritesScreen}
         options={{
-          tabBarLabel: 'Favorites',
-          headerTitle: 'My Favorites',
+          tabBarLabel: "Favorites",
+          headerTitle: "My Favorites",
           headerRight: () => (
             <View style={{ marginRight: 15 }}>
               <Feather name="filter" size={24} color={COLORS.white} />
@@ -105,8 +109,8 @@ const MainTabs = () => {
         name="ProfileTab"
         component={ProfileScreen}
         options={{
-          tabBarLabel: 'Profile',
-          headerTitle: 'My Profile',
+          tabBarLabel: "Profile",
+          headerTitle: "My Profile",
           headerRight: () => (
             <View style={{ marginRight: 15 }}>
               <Feather name="settings" size={24} color={COLORS.white} />
@@ -136,7 +140,14 @@ const AppNavigator = () => {
 
   if (isLoading) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: COLORS.background }}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: COLORS.background,
+        }}
+      >
         <ActivityIndicator size="large" color={COLORS.primary} />
       </View>
     );
@@ -160,9 +171,39 @@ const AppNavigator = () => {
                 },
                 headerTintColor: COLORS.white,
                 headerTitleStyle: {
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                 },
-                title: 'Course Details',
+                title: "Course Details",
+              }}
+            />
+            <Stack.Screen
+              name="EditProfile"
+              component={EditProfileScreen}
+              options={{
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: COLORS.primary,
+                },
+                headerTintColor: COLORS.white,
+                headerTitleStyle: {
+                  fontWeight: "bold",
+                },
+                title: "Edit Profile",
+              }}
+            />
+            <Stack.Screen
+              name="Achievements"
+              component={AchievementsScreen}
+              options={{
+                headerShown: true,
+                headerStyle: {
+                  backgroundColor: COLORS.primary,
+                },
+                headerTintColor: COLORS.white,
+                headerTitleStyle: {
+                  fontWeight: "bold",
+                },
+                title: "Achievements",
               }}
             />
           </>
